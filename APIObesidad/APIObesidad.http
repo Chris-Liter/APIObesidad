@@ -1,0 +1,6 @@
+@APIObesidad_HostAddress = http://localhost:5084
+
+GET {{APIObesidad_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
