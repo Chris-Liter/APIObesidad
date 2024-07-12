@@ -1,0 +1,55 @@
+version: '3.8'
+
+networks:
+  datalogger_net:
+    driver: bridge
+
+services:
+
+  apifarmacia:
+    image: chrisliter/apiobesidad  # Usa solo si la imagen ya está construida y disponible localmente
+    depends_on:
+      - postgres
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    networks:
+      - datalogger_net
+    environment:
+      DB_CONNECTION_STRING: "Server=baseobesidad;Port=5432;Database=obesidadbd;Username=postgres;Password=postgres"
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    container_name: baseobesidad
+    hostname: baseobesidad
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: obesidadbd
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dataobesidad:/var/lib/postgresql/data
+    networks:
+      - datalogger_net
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    networks:
+      - datalogger_net
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_dataobesidad:
+    driver: local
